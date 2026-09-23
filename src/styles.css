@@ -1,0 +1,116 @@
+:root {
+  --bg: #f1f5f9;
+  --panel: #ffffff;
+  --border: #e2e8f0;
+  --ink: #0f172a;
+  --muted: #64748b;
+  --accent: #2563eb;
+}
+
+* { box-sizing: border-box; }
+html, body, #root { height: 100%; margin: 0; }
+body {
+  font-family: 'Segoe UI', system-ui, sans-serif;
+  font-size: 13px;
+  color: var(--ink);
+  background: var(--bg);
+  overflow: hidden;
+}
+
+.app { display: grid; grid-template-rows: 46px 1fr; height: 100%; }
+
+.topbar {
+  display: flex; align-items: center; gap: 12px;
+  padding: 0 14px; background: var(--panel);
+  border-bottom: 1px solid var(--border);
+}
+.topbar .brand { font-weight: 700; font-size: 14px; }
+.topbar .spacer { flex: 1; }
+.topbar .status { color: var(--muted); font-size: 12px; }
+
+button {
+  font: inherit; padding: 5px 11px; border: 1px solid var(--border);
+  background: #fff; border-radius: 6px; cursor: pointer; color: var(--ink);
+}
+button:hover { background: #f8fafc; }
+button.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+button.primary:hover { background: #1d4ed8; }
+button.danger { color: #b91c1c; }
+button.small { padding: 2px 8px; font-size: 12px; }
+
+.workspace { display: grid; grid-template-columns: 380px 1fr; min-height: 0; }
+
+.editor {
+  overflow-y: auto; background: var(--panel);
+  border-right: 1px solid var(--border);
+  padding-bottom: 60px;
+}
+.editor .nav {
+  display: flex; flex-wrap: wrap; gap: 4px; padding: 10px 12px;
+  position: sticky; top: 0; background: var(--panel); z-index: 5;
+  border-bottom: 1px solid var(--border);
+}
+.editor .nav button { font-size: 12px; padding: 3px 9px; }
+.editor .nav button.on { background: var(--ink); color: #fff; border-color: var(--ink); }
+
+.pane { padding: 12px 14px; }
+.pane h2 { font-size: 13px; margin: 0 0 10px; }
+.field { margin-bottom: 8px; }
+.field label { display: block; font-size: 11px; color: var(--muted); margin-bottom: 2px; }
+.field input[type=text], .field input[type=month], .field textarea, .field select {
+  width: 100%; font: inherit; padding: 5px 7px;
+  border: 1px solid var(--border); border-radius: 5px; background: #fff;
+}
+.field textarea { resize: vertical; min-height: 60px; }
+.field .row { display: flex; gap: 6px; }
+.field .row > * { flex: 1; }
+
+.entry-card {
+  border: 1px solid var(--border); border-radius: 8px;
+  padding: 10px; margin-bottom: 8px; background: #fbfdff;
+}
+.entry-card .card-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px; }
+.entry-card .card-head b { font-size: 12px; }
+.bullet-row { display: flex; gap: 4px; margin-bottom: 4px; }
+.bullet-row input { flex: 1; }
+.hint { font-size: 11px; color: #b45309; margin-top: 2px; }
+
+.preview {
+  overflow: auto; padding: 24px;
+  display: flex; flex-direction: column; align-items: center; gap: 18px;
+}
+.preview .page-wrap {
+  position: relative;
+  box-shadow: 0 2px 12px rgba(15,23,42,.18);
+  background: #fff;
+}
+.pagebadge {
+  position: sticky; top: 8px; align-self: flex-end; margin-right: 24px;
+  background: var(--ink); color: #fff; padding: 4px 10px; border-radius: 12px;
+  font-size: 12px; z-index: 4;
+}
+.spillwarn {
+  position: sticky; top: 36px; align-self: flex-end; margin-right: 24px;
+  background: #fef3c7; color: #92400e; border: 1px solid #fbbf24;
+  padding: 4px 10px; border-radius: 6px; font-size: 12px; z-index: 4;
+}
+
+.tpl-row { display: flex; gap: 8px; flex-wrap: wrap; }
+.tpl-card {
+  border: 2px solid var(--border); border-radius: 8px; padding: 8px;
+  width: 108px; cursor: pointer; text-align: center;
+}
+.tpl-card.on { border-color: var(--accent); }
+.tpl-card .thumb { height: 62px; background: #f1f5f9; border-radius: 4px; margin-bottom: 6px; display:flex;align-items:center;justify-content:center;font-size:11px;color:var(--muted); }
+.tpl-card b { font-size: 12px; display: block; }
+.tpl-card small { color: var(--muted); font-size: 10px; display:block; margin-top:2px; }
+.tpl-card .free { color: #047857; }
+
+input[type=range] { width: 100%; }
+.swatches { display: flex; gap: 6px; }
+.swatch { width: 22px; height: 22px; border-radius: 50%; border: 2px solid transparent; cursor: pointer; }
+.swatch.on { border-color: var(--ink); }
+
+.ver-row { display:flex; align-items:center; gap:6px; padding:6px 8px; border:1px solid var(--border); border-radius:6px; margin-bottom:6px; }
+.ver-row.on { border-color: var(--accent); background: #eff6ff; }
+.ver-row b { flex:1; }

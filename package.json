@@ -1,0 +1,65 @@
+{
+  "name": "cv-builder",
+  "productName": "CV Builder",
+  "description": "Offline CV builder — write once, tailor per job, export a designed PDF. No account, no paywall on export.",
+  "author": {
+    "name": "Muhammad Shahbaz",
+    "email": "mrshahbaznns@gmail.com"
+  },
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "main": "electron/main.cjs",
+  "scripts": {
+    "dev": "concurrently -k \"cross-env BROWSER=none npm run react:dev\" \"npm run electron:dev\"",
+    "react:dev": "vite",
+    "electron:dev": "wait-on tcp:5173 && electron .",
+    "build": "vite build",
+    "dist": "npm run build && electron-builder",
+    "dist:win": "npm run build && electron-builder --win --x64"
+  },
+  "build": {
+    "appId": "com.shahbaz.cvbuilder",
+    "productName": "CV Builder",
+    "copyright": "Copyright © 2026 Muhammad Shahbaz",
+    "asar": true,
+    "directories": {
+      "buildResources": "build",
+      "output": "release"
+    },
+    "files": [
+      "dist/**/*",
+      "electron/**/*",
+      "package.json",
+      "!**/*.map"
+    ],
+    "extraMetadata": {
+      "main": "electron/main.cjs"
+    },
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64"]
+        }
+      ]
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "cross-env": "^7.0.3",
+    "electron": "^30.0.0",
+    "electron-builder": "^24.13.3",
+    "vite": "^5.4.0",
+    "wait-on": "^7.2.0",
+    "@vitejs/plugin-react": "^4.3.0"
+  },
+  "dependencies": {
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  }
+}

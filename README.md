@@ -1,4 +1,4 @@
-# CV Builder
+# Resumine
 
 An offline desktop CV builder for Windows. Write your CV once, tailor it per job,
 and export a PDF that looks designed — no account, and the export button is

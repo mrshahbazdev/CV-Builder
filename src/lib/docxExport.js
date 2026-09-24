@@ -126,7 +126,7 @@ export async function docxBlob(doc, version) {
   }
 
   const d = new Document({
-    creator: p.name || 'CV Builder',
+    creator: p.name || 'Resumine',
     title: `${p.name || 'CV'} — ${version.name}`,
     styles: {
       default: {

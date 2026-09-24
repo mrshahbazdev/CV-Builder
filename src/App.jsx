@@ -146,7 +146,7 @@ export default function App() {
   return (
     <div className="app">
       <div className="topbar">
-        <span className="brand"><span className="mark">CV</span> Builder</span>
+        <span className="brand"><span className="mark">R</span>esumine</span>
         <select className="verpick" value={versionId} aria-label="CV version"
           onChange={e => setVersionId(e.target.value)}
           title="Tailored version being edited">
@@ -194,7 +194,7 @@ export default function App() {
       {firstRun && (
         <div className="overlay" role="dialog" aria-modal="true" aria-label="Welcome">
           <div className="welcome">
-            <h1>Welcome to CV Builder</h1>
+            <h1>Welcome to Resumine</h1>
             <p>Offline, private, and the export is always free. Pick a starting point — everything can be changed later.</p>
             <button className="choice" onClick={() => setFirstRun(false)}>
               <b>Start with the sample CV</b>

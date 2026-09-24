@@ -1,6 +1,6 @@
 {
-  "name": "cv-builder",
-  "productName": "CV Builder",
+  "name": "resumine",
+  "productName": "Resumine",
   "description": "Offline CV builder — write once, tailor per job, export a designed PDF. No account, no paywall on export.",
   "author": {
     "name": "Muhammad Shahbaz",
@@ -19,8 +19,8 @@
     "dist:win": "npm run build && electron-builder --win --x64"
   },
   "build": {
-    "appId": "com.shahbaz.cvbuilder",
-    "productName": "CV Builder",
+    "appId": "com.shahbaz.resumine",
+    "productName": "Resumine",
     "copyright": "Copyright © 2026 Muhammad Shahbaz",
     "asar": true,
     "directories": {
@@ -43,8 +43,22 @@
           "arch": [
             "x64"
           ]
+        },
+        {
+          "target": "appx",
+          "arch": [
+            "x64"
+          ]
         }
       ]
+    },
+    "appx": {
+      "applicationId": "Resumine",
+      "displayName": "Resumine",
+      "identityName": "MuhammadShahbaz.Resumine",
+      "publisher": "CN=82C2C857-730F-4239-B80D-4F1C7E03E8B4",
+      "publisherDisplayName": "Muhammad Shahbaz",
+      "backgroundColor": "#0f766e"
     },
     "nsis": {
       "oneClick": false,

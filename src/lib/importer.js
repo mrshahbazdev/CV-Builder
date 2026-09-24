@@ -37,7 +37,7 @@ export function importJson(text) {
   if (data.schema && data.profile) return data;
   // JSON Resume standard.
   if (data.basics) return fromJsonResume(data);
-  throw new Error('Unrecognised JSON — expected a CV Builder export or JSON Resume.');
+  throw new Error('Unrecognised JSON — expected a Resumine export or JSON Resume.');
 }
 
 function fromJsonResume(r) {

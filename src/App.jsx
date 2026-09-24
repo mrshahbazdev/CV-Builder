@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { emptyDoc, sampleDoc, activeVersion, addVersion, uid, SECTION_DEFS, DEFAULT_ORDER } from './lib/model.js';
 import { getTemplate, templateList } from './lib/templates.js';
 import { blocksFor, documentHtml } from './lib/cvHtml.js';
-import { packPages, packRailPages, measureBlocks } from './lib/paginate.js';
+import { packPages, packRailPages, fitBlocks, contentHeight, streamWidth } from './lib/paginate.js';
 import { textFor } from './lib/exportText.js';
 import { docxBlob } from './lib/docxExport.js';
 import { importJson, importPdfBase64, importDocxBase64 } from './lib/importer.js';
@@ -229,9 +229,8 @@ function buildExportHtml(doc, version, tpl) {
       `<div class="page"><div class="rail-wrap" style="height:100%"><div class="rail">${p.rail.map(b => b.html).join('')}</div><div class="maincol">${p.main.map(b => b.html).join('')}</div></div></div>`
     ).join('');
   } else {
-    const w = 210 - tpl.margin * 2;
-    const h = measureBlocks(blocks, tpl, doc.design, w);
-    const pages = packPages(blocks, h, tpl);
+    const fit = fitBlocks(blocks, tpl, doc.design, streamWidth(tpl), contentHeight(tpl));
+    const pages = packPages(fit.blocks, fit.heights, contentHeight(tpl));
     pagesHtml = pages.map(p =>
       `<div class="page"><div class="page-inner">${p.map(b => b.html).join('')}</div></div>`
     ).join('');

@@ -174,18 +174,11 @@ export function importText(text) {
   return doc;
 }
 
+// Text extraction happens in the main process (import:pdfText): a bundled
+// pdf.js worker would be blocked by CSP + the opaque file:// origin in the
+// packaged renderer. Dev would pass, production would fail.
 export async function importPdfBase64(b64) {
-  const pdfjs = await import('pdfjs-dist');
-  const worker = await import('pdfjs-dist/build/pdf.worker.min.mjs?worker');
-  pdfjs.GlobalWorkerOptions.workerPort = new worker.default();
-  const bin = Uint8Array.from(atob(b64), c => c.charCodeAt(0));
-  const pdf = await pdfjs.getDocument({ data: bin, isEvalSupported: false }).promise;
-  let text = '';
-  for (let i = 1; i <= pdf.numPages; i++) {
-    const page = await pdf.getPage(i);
-    const tc = await page.getTextContent();
-    text += tc.items.map(it => it.str).join('\n') + '\n\n';
-  }
+  const text = await window.api.imports.pdfText({ base64: b64 });
   return importText(text);
 }
 

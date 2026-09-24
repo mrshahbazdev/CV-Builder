@@ -4,6 +4,7 @@ const { app, BrowserWindow, session, ipcMain, shell, dialog } = require('electro
 
 const { registerStoreIPC } = require('./ipc/store.cjs');
 const { registerExportIPC } = require('./ipc/export.cjs');
+const { registerImportIPC } = require('./ipc/import.cjs');
 
 const isDev = !app.isPackaged;
 let mainWindow = null;
@@ -24,6 +25,7 @@ function init() {
   applyCSP();
   registerStoreIPC();
   registerExportIPC();
+  registerImportIPC();
   registerAppIPC();
   createWindow();
 

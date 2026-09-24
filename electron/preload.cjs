@@ -15,6 +15,9 @@ contextBridge.exposeInMainWorld('api', {
     json: (payload) => ipcRenderer.invoke('export:json', payload),
     binary: (payload) => ipcRenderer.invoke('export:binary', payload)
   },
+  imports: {
+    pdfText: (payload) => ipcRenderer.invoke('import:pdfText', payload)
+  },
   app: {
     version: () => ipcRenderer.invoke('app:version'),
     openFile: (opts) => ipcRenderer.invoke('app:openFile', opts || {}),

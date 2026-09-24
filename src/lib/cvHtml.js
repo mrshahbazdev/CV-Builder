@@ -3,7 +3,7 @@ import { SECTION_DEFS, DEFAULT_ORDER, uid } from './model.js';
 
 export const A4 = { w: 210, h: 297 }; // mm
 
-function esc(s) {
+export function esc(s) {
   return String(s ?? '').replace(/[&<>"']/g, c =>
     ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 }
@@ -128,9 +128,9 @@ export function blocksFor(doc, version, design) {
   const ov = version.overrides || {};
   const blocks = [];
 
-  blocks.push({ key: 'header', html: headerHtml(doc, tpl) });
+  blocks.push({ key: 'header', sid: 'header', html: headerHtml(doc, tpl) });
 
-  const push = (label, html, keep) => blocks.push({ key: uid(), label, html, keepWithNext: keep });
+  const push = (sid, label, html, keep) => blocks.push({ key: uid(), sid, label, html, keepWithNext: keep });
 
   for (const sid of order) {
     if (hidden.has(sid)) continue;
@@ -142,15 +142,15 @@ export function blocksFor(doc, version, design) {
     if (def.kind === 'text') {
       const text = ov['summary:text'] ?? sec.text;
       if (!text || !text.trim()) continue;
-      push(label, sectionTitle(label, tpl), true);
-      push(label, `<div class="entry summary"><p>${esc(text)}</p></div>`);
+      push(sid, label, sectionTitle(label, tpl), true);
+      push(sid, label, `<div class="entry summary"><p>${esc(text)}</p></div>`);
       continue;
     }
     if (def.kind === 'groups') {
       const groups = (sec.groups || []).filter(g => (g.name || g.items || '').trim());
       if (!groups.length) continue;
-      push(label, sectionTitle(label, tpl), true);
-      groups.forEach((g, i) => push(label,
+      push(sid, label, sectionTitle(label, tpl), true);
+      groups.forEach((g, i) => push(sid, label,
         `<div class="skills"><div class="grp"><b>${esc(g.name)}</b>${g.name && g.items ? ': ' : ''}${esc(g.items)}</div></div>`,
         i === 0));
       continue;
@@ -160,8 +160,8 @@ export function blocksFor(doc, version, design) {
         if (hidden.has(`custom:${cs.id}`)) continue;
         const items = (cs.entries || []).filter(e => (e.title || e.body || '').trim());
         if (!items.length) continue;
-        push(cs.title, sectionTitle(cs.title || 'Section', tpl), true);
-        items.forEach((e, i) => push(cs.title,
+        push(`custom:${cs.id}`, cs.title, sectionTitle(cs.title || 'Section', tpl), true);
+        items.forEach((e, i) => push(`custom:${cs.id}`, cs.title,
           `<div class="entry"><div class="row1"><span class="t1">${esc(e.title)}</span><span class="dates">${esc(e.dates || '')}</span></div>${e.body ? `<div class="t2" style="white-space:pre-wrap">${esc(e.body)}</div>` : ''}</div>`,
           i === 0));
       }
@@ -172,8 +172,8 @@ export function blocksFor(doc, version, design) {
       FIELD_KEYS.some(k => (e[k] || '').toString().trim() || e[k] === true) ||
       (e.bullets || e.notes || []).some(b => b.trim()));
     if (!entries.length) continue;
-    push(label, sectionTitle(label, tpl), true);
-    entries.forEach((e, i) => push(label, entryHtml(e, sid), i === 0));
+    push(sid, label, sectionTitle(label, tpl), true);
+    entries.forEach((e, i) => push(sid, label, entryHtml(e, sid), i === 0));
   }
   return blocks;
 }

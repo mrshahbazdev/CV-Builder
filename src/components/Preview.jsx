@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { getTemplate } from '../lib/templates.js';
 import { blocksFor, cssFor, A4 } from '../lib/cvHtml.js';
-import { measureBlocks, packPages, packRailPages, lastPageFill } from '../lib/paginate.js';
+import { fitBlocks, packPages, packRailPages, lastPageFill, contentHeight, streamWidth } from '../lib/paginate.js';
 
 /**
  * Live preview of real A4 pages. Blocks are measured at print width and
@@ -17,14 +17,13 @@ export default function Preview({ doc, version, design }) {
       const { pages } = packRailPages(doc, tpl, design, blocks);
       return { pages, rail: true };
     }
-    const w = A4.w - tpl.margin * 2;
-    const heights = measureBlocks(blocks, tpl, design, w);
-    return { pages: packPages(blocks, heights, tpl), rail: false, heights, blocks };
+    const fit = fitBlocks(blocks, tpl, design, streamWidth(tpl), contentHeight(tpl));
+    return { pages: packPages(fit.blocks, fit.heights, contentHeight(tpl)), rail: false, heights: fit.heights, blocks: fit.blocks };
   }, [doc, version, design, tpl]);
 
   const pageCount = pages.length;
   let fill = 1;
-  if (!rail && pages.length > 1) fill = lastPageFill(blocks, heights, tpl, pages);
+  if (!rail && pages.length > 1) fill = lastPageFill(blocks, heights, contentHeight(tpl), pages);
   const spilling = pageCount > 1 && fill < 0.25;
 
   return (

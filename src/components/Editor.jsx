@@ -56,7 +56,7 @@ function Profile({ doc, update }) {
           <div className="row">
             <input type="text" value={l.label} placeholder="Label" onChange={e => update(d => { d.profile.links.find(x => x.id === l.id).label = e.target.value; })} />
             <input type="text" value={l.url} placeholder="URL" onChange={e => update(d => { d.profile.links.find(x => x.id === l.id).url = e.target.value; })} />
-            <button className="small danger" onClick={() => update(d => { d.profile.links = d.profile.links.filter(x => x.id !== l.id); })}>✕</button>
+            <button className="small icon danger" aria-label="Remove link" title="Remove link" onClick={() => update(d => { d.profile.links = d.profile.links.filter(x => x.id !== l.id); })}>✕</button>
           </div>
         </div>
       ))}
@@ -94,10 +94,10 @@ function EntriesEditor({ doc, sectionId, update }) {
         <div className="entry-card" key={e.id}>
           <div className="card-head">
             <b>{e.role || e.title || e.name || e.qualification || `Entry ${i + 1}`}</b>
-            <span>
-              <button className="small" disabled={i === 0} onClick={() => move(entries, i, -1, update, sectionId)}>↑</button>
-              <button className="small" disabled={i === entries.length - 1} onClick={() => move(entries, i, 1, update, sectionId)}>↓</button>
-              <button className="small danger" onClick={() => update(d => { d.sections[sectionId].entries = d.sections[sectionId].entries.filter(x => x.id !== e.id); })}>✕</button>
+            <span className="card-actions">
+              <button className="small icon" aria-label="Move up" title="Move up" disabled={i === 0} onClick={() => move(entries, i, -1, update, sectionId)}>↑</button>
+              <button className="small icon" aria-label="Move down" title="Move down" disabled={i === entries.length - 1} onClick={() => move(entries, i, 1, update, sectionId)}>↓</button>
+              <button className="small icon danger" aria-label="Delete entry" title="Delete entry" onClick={() => update(d => { d.sections[sectionId].entries = d.sections[sectionId].entries.filter(x => x.id !== e.id); })}>✕</button>
             </span>
           </div>
           {fields.map(f => (
@@ -134,7 +134,7 @@ function Field({ f, entry, onChange }) {
           <div key={i}>
             <div className="bullet-row">
               <input type="text" value={b} onChange={e => { const nb = [...bullets]; nb[i] = e.target.value; onChange(f.key, nb); }} />
-              <button className="small danger" onClick={() => onChange(f.key, bullets.filter((_, j) => j !== i))}>✕</button>
+              <button className="small icon danger" aria-label="Remove bullet" title="Remove bullet" onClick={() => onChange(f.key, bullets.filter((_, j) => j !== i))}>✕</button>
             </div>
             {b.trim() && WEAK_OPENERS.test(b.trim()) &&
               <div className="hint">Starts with a weak opener — try an action verb (“Led”, “Shipped”, “Reduced”).</div>}
@@ -161,7 +161,7 @@ function SkillsEditor({ doc, update }) {
       {groups.map((g, i) => (
         <div className="entry-card" key={g.id}>
           <div className="card-head"><b>{g.name || `Group ${i + 1}`}</b>
-            <button className="small danger" onClick={() => update(d => { d.sections.skills.groups = d.sections.skills.groups.filter(x => x.id !== g.id); })}>✕</button>
+            <button className="small icon danger" aria-label="Delete group" title="Delete group" onClick={() => update(d => { d.sections.skills.groups = d.sections.skills.groups.filter(x => x.id !== g.id); })}>✕</button>
           </div>
           <div className="field"><label>Group name</label><input type="text" value={g.name} onChange={e => update(d => { d.sections.skills.groups.find(x => x.id === g.id).name = e.target.value; })} /></div>
           <div className="field"><label>Skills (comma-separated)</label><input type="text" value={g.items} onChange={e => update(d => { d.sections.skills.groups.find(x => x.id === g.id).items = e.target.value; })} /></div>
@@ -188,7 +188,7 @@ function CustomEditor({ doc, version, update, updateVersion }) {
                     v.hidden = e.target.checked ? [...v.hidden, `custom:${cs.id}`] : v.hidden.filter(x => x !== `custom:${cs.id}`);
                   })} /> hide
               </label>
-              <button className="small danger" onClick={() => update(d => { d.sections.custom.sections = d.sections.custom.sections.filter(x => x.id !== cs.id); })}>✕</button>
+              <button className="small icon danger" aria-label="Delete section" title="Delete section" onClick={() => update(d => { d.sections.custom.sections = d.sections.custom.sections.filter(x => x.id !== cs.id); })}>✕</button>
             </span>
           </div>
           <div className="field"><label>Section title</label><input type="text" value={cs.title} onChange={e => update(d => { d.sections.custom.sections.find(x => x.id === cs.id).title = e.target.value; })} /></div>

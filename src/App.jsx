@@ -20,6 +20,7 @@ export default function App() {
   const [versionId, setVersionId] = useState(null);
   const [pane, setPane] = useState('profile');
   const [saveState, setSaveState] = useState('saved');
+  const [firstRun, setFirstRun] = useState(false);
   const saveTimer = useRef(null);
   const snapTimer = useRef(null);
 
@@ -28,6 +29,7 @@ export default function App() {
       const doc = d || sampleDoc();
       setDoc(doc);
       setVersionId(doc.versions[0].id);
+      setFirstRun(!d);
     });
   }, []);
 
@@ -125,22 +127,34 @@ export default function App() {
   if (!doc) return null;
 
   const version = doc.versions.find(v => v.id === versionId) || doc.versions[0];
-  const panes = [
-    { id: 'profile', label: 'Profile' },
-    ...SECTION_DEFS.map(s => ({ id: s.id, label: s.label })),
-    { id: 'versions', label: 'Versions' },
-    { id: 'ats', label: 'ATS' },
-    { id: 'letter', label: 'Letter' },
-    { id: 'design', label: 'Design' }
+  const hidden = new Set(version.hidden || []);
+  const navGroups = [
+    { label: 'CV content', panes: [
+      { id: 'profile', label: 'Profile' },
+      ...SECTION_DEFS.map(s => ({ id: s.id, label: s.label }))
+    ] },
+    { label: 'Tailor per job', panes: [
+      { id: 'versions', label: 'Versions' },
+      { id: 'ats', label: 'ATS check' },
+      { id: 'letter', label: 'Cover letter' }
+    ] },
+    { label: 'Look & send', panes: [
+      { id: 'design', label: 'Design' }
+    ] }
   ];
 
   return (
     <div className="app">
       <div className="topbar">
-        <span className="brand">CV Builder</span>
-        <span className="status">{saveState === 'saved' ? 'Saved' : 'Saving…'}</span>
+        <span className="brand"><span className="mark">CV</span> Builder</span>
+        <select className="verpick" value={versionId} aria-label="CV version"
+          onChange={e => setVersionId(e.target.value)}
+          title="Tailored version being edited">
+          {doc.versions.map(v => <option key={v.id} value={v.id}>{v.name}</option>)}
+        </select>
+        <span className={`status ${saveState === 'saved' ? '' : 'saving'}`}>{saveState === 'saved' ? 'Saved' : 'Saving…'}</span>
         <div className="spacer" />
-        <button onClick={importCv}>Import…</button>
+        <button onClick={importCv} title="Start a draft from an existing CV file">Import…</button>
         <button onClick={exportTextFile}>Plain text</button>
         <button onClick={exportDocx}>DOCX</button>
         <button onClick={exportJson}>JSON</button>
@@ -149,9 +163,17 @@ export default function App() {
       </div>
       <div className="workspace">
         <div className="editor">
-          <div className="nav">
-            {panes.map(p => (
-              <button key={p.id} className={pane === p.id ? 'on' : ''} onClick={() => setPane(p.id)}>{p.label}</button>
+          <div className="nav" role="tablist" aria-label="Editor sections">
+            {navGroups.map(g => (
+              <div className="group" key={g.label}>
+                <div className="glabel">{g.label}</div>
+                {g.panes.map(p => (
+                  <button key={p.id} role="tab" aria-selected={pane === p.id}
+                    className={`${pane === p.id ? 'on' : ''} ${hidden.has(p.id) ? 'hidden-here' : ''}`}
+                    title={hidden.has(p.id) ? 'Hidden in this version' : p.label}
+                    onClick={() => setPane(p.id)}>{p.label}</button>
+                ))}
+              </div>
             ))}
           </div>
           <div className="pane">
@@ -169,6 +191,27 @@ export default function App() {
         </div>
         <Preview doc={doc} version={version} design={doc.design} />
       </div>
+      {firstRun && (
+        <div className="overlay" role="dialog" aria-modal="true" aria-label="Welcome">
+          <div className="welcome">
+            <h1>Welcome to CV Builder</h1>
+            <p>Offline, private, and the export is always free. Pick a starting point — everything can be changed later.</p>
+            <button className="choice" onClick={() => setFirstRun(false)}>
+              <b>Start with the sample CV</b>
+              <span>A filled-in example to poke at and replace with your own details.</span>
+            </button>
+            <button className="choice" onClick={() => { const d = emptyDoc(); setDoc(d); setVersionId(d.versions[0].id); setFirstRun(false); }}>
+              <b>Start blank</b>
+              <span>An empty CV — fill in your profile first, then add sections.</span>
+            </button>
+            <button className="choice" onClick={() => { setFirstRun(false); importCv(); }}>
+              <b>Import an existing CV</b>
+              <span>PDF, DOCX or JSON — parsed into a starting draft you can correct.</span>
+            </button>
+            <div className="foot">Your CV never leaves this computer — no account, no cloud.</div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

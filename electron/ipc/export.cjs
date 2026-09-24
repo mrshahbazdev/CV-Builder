@@ -28,6 +28,17 @@ function registerExportIPC() {
     return { ok: true, filePath: res.filePath };
   });
 
+  // Binary exports (e.g. DOCX) arrive as base64 from the renderer.
+  ipcMain.handle('export:binary', async (_e, { base64, suggestedName, filters }) => {
+    const res = await dialog.showSaveDialog(win(), {
+      defaultPath: suggestedName || 'export',
+      filters: filters || [{ name: 'Document', extensions: ['docx'] }]
+    });
+    if (res.canceled || !res.filePath) return { cancelled: true };
+    fs.writeFileSync(res.filePath, Buffer.from(base64, 'base64'));
+    return { ok: true, filePath: res.filePath };
+  });
+
   ipcMain.handle('export:json', async (_e, { json, suggestedName }) => {
     const res = await dialog.showSaveDialog(win(), {
       defaultPath: suggestedName || 'cv.json',

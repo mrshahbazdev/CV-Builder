@@ -54,6 +54,27 @@ export const TEMPLATES = {
     sectionTitleStyle: 'caps-rule',
     columns: 'single'
   },
+  academic: {
+    id: 'academic', name: 'Academic',
+    blurb: 'Publications, grants, teaching — for research careers.',
+    font: "Georgia, 'Times New Roman', serif",
+    headingFont: "Georgia, 'Times New Roman', serif",
+    nameSize: 22, baseSize: 10, lineHeight: 1.5,
+    margin: 22, sectionGap: 6, entryGap: 5,
+    order: ['summary', 'education', 'publications', 'experience', 'awards', 'skills', 'certificates', 'languages', 'projects'],
+    sectionTitleStyle: 'caps-rule',
+    columns: 'single'
+  },
+  creative: {
+    id: 'creative', name: 'Creative',
+    blurb: 'One restrained accent — design and marketing roles.',
+    font: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+    headingFont: "'Segoe UI', 'Helvetica Neue', Arial, sans-serif",
+    nameSize: 28, baseSize: 10, lineHeight: 1.5,
+    margin: 22, sectionGap: 8, entryGap: 6,
+    sectionTitleStyle: 'accent-rule',
+    columns: 'single'
+  },
   technical: {
     id: 'technical', name: 'Technical',
     blurb: 'Built for projects and stacks, not just job titles.',

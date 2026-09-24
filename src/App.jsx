@@ -4,10 +4,14 @@ import { getTemplate, templateList } from './lib/templates.js';
 import { blocksFor, documentHtml } from './lib/cvHtml.js';
 import { packPages, packRailPages, measureBlocks } from './lib/paginate.js';
 import { textFor } from './lib/exportText.js';
+import { docxBlob } from './lib/docxExport.js';
+import { importJson, importPdfBase64, importDocxBase64 } from './lib/importer.js';
 import Editor from './components/Editor.jsx';
 import Preview from './components/Preview.jsx';
 import VersionsPanel from './components/VersionsPanel.jsx';
 import DesignPanel from './components/DesignPanel.jsx';
+import AtsPanel from './components/AtsPanel.jsx';
+import LetterPanel, { letterBlocksHtml } from './components/LetterPanel.jsx';
 
 const api = window.api;
 
@@ -74,6 +78,45 @@ export default function App() {
     await api.export.text({ text, suggestedName: name });
   }, [doc, versionId]);
 
+  const exportDocx = useCallback(async () => {
+    const v = doc.versions.find(v => v.id === versionId) || activeVersion(doc);
+    const blob = await docxBlob(doc, v);
+    const buf = await blob.arrayBuffer();
+    const base64 = btoa(new Uint8Array(buf).reduce((s, b) => s + String.fromCharCode(b), ''));
+    const name = `${(doc.profile.name || 'cv').replace(/\s+/g, '_').toLowerCase()}.docx`;
+    await api.export.binary({ base64, suggestedName: name,
+      filters: [{ name: 'Word document', extensions: ['docx'] }] });
+  }, [doc, versionId]);
+
+  const exportLetterPdf = useCallback(async () => {
+    const tpl = getTemplate(doc.design.template);
+    const html = documentHtml(tpl, doc.design,
+      `<div class="page"><div class="page-inner cv">${letterBlocksHtml(doc, doc.design)}</div></div>`);
+    const name = `${(doc.profile.name || 'letter').replace(/\s+/g, '_').toLowerCase()}_letter.pdf`;
+    await api.export.pdf({ html, suggestedName: name });
+  }, [doc]);
+
+  const importCv = useCallback(async () => {
+    const f = await api.app.openFile({ filters: [
+      { name: 'CV files', extensions: ['pdf', 'docx', 'json'] }
+    ] });
+    if (!f) return;
+    try {
+      let next;
+      if (f.name.endsWith('.json')) next = importJson(f.text);
+      else if (f.name.endsWith('.pdf')) next = await importPdfBase64(f.base64);
+      else if (f.name.endsWith('.docx')) next = await importDocxBase64(f.base64);
+      else return;
+      if (confirm('Import as a starting draft? This replaces the current CV — a snapshot is saved first.')) {
+        await api.store.snapshot(doc, 'before import');
+        setDoc(next);
+        setVersionId(next.versions[0].id);
+      }
+    } catch (err) {
+      alert(`Import failed: ${err.message}`);
+    }
+  }, [doc]);
+
   const exportJson = useCallback(async () => {
     const name = `${(doc.profile.name || 'cv').replace(/\s+/g, '_').toLowerCase()}.json`;
     await api.export.json({ json: JSON.stringify(doc, null, 2), suggestedName: name });
@@ -86,6 +129,8 @@ export default function App() {
     { id: 'profile', label: 'Profile' },
     ...SECTION_DEFS.map(s => ({ id: s.id, label: s.label })),
     { id: 'versions', label: 'Versions' },
+    { id: 'ats', label: 'ATS' },
+    { id: 'letter', label: 'Letter' },
     { id: 'design', label: 'Design' }
   ];
 
@@ -95,8 +140,11 @@ export default function App() {
         <span className="brand">CV Builder</span>
         <span className="status">{saveState === 'saved' ? 'Saved' : 'Saving…'}</span>
         <div className="spacer" />
+        <button onClick={importCv}>Import…</button>
         <button onClick={exportTextFile}>Plain text</button>
+        <button onClick={exportDocx}>DOCX</button>
         <button onClick={exportJson}>JSON</button>
+        <button onClick={exportLetterPdf}>Letter PDF</button>
         <button className="primary" onClick={exportPdf}>Export PDF</button>
       </div>
       <div className="workspace">
@@ -112,6 +160,10 @@ export default function App() {
                   setVersionId={setVersionId} update={update} updateVersion={updateVersion} />
               : pane === 'design'
                 ? <DesignPanel doc={doc} update={update} />
+              : pane === 'ats'
+                ? <AtsPanel doc={doc} version={version} updateVersion={updateVersion} />
+              : pane === 'letter'
+                ? <LetterPanel doc={doc} update={update} />
                 : <Editor doc={doc} version={version} pane={pane} update={update} updateVersion={updateVersion} />}
           </div>
         </div>

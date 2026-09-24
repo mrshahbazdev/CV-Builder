@@ -99,6 +99,7 @@ export function emptyDoc() {
       publications: { entries: [] },
       custom: { sections: [] }
     },
+    letter: { recipient: '', company: '', role: '', body: '' },
     versions: [{ id: uid(), name: 'Master', order: [...DEFAULT_ORDER], hidden: [], overrides: {}, jobDescription: '', lastAtsScore: null }],
     design: { template: 'classic', density: 0, accent: '#1f4e79' }
   };
